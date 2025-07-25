@@ -29,10 +29,10 @@ PyQt5>=5.15.0
 pyqtgraph>=0.13.1
 
 ## **Installation** 
-1. Clone or download this repository https://github.com/paudel54/biopac-signal-visualizer.git 
-git clone 
+1. To clone or download this repository.
+git clone https://github.com/paudel54/biopac-signal-visualizer
 2. Change directory
-cd Plot_merged_biopac
+cd biopac-signal-visualizer
 3. Install dependencies: 
 pip install -r requirements.txt
 4. Run the script: 
