@@ -4,24 +4,40 @@ import pandas as pd
 import numpy as np
 import os
 
+# sets an environment variable that tells QT to use rendering compatabile for MAC
 if sys.platform == "darwin":
     os.environ["QT_MAC_WANTS_LAYER"] = "1"
 
+#QT widgets:
+"""
+QApplication: the main application object; manages the event loop.
+QMainWindow: a top-level window with menus, toolbars, central widget (on our main app window).
+QWidget: the base class for all UI elements (generic widget).
+QVBoxLayout / QHBoxLayout: layout managers (vertical/horizontal stacking of widgets).
+QComboBox: drop-down selector.
+QSpinBox: numeric spinner input.
+QLabel: simple text/image display widget.
+QFileDialog: system file chooser dialog.
+QPushButton: clickable button.
+"""
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout,
     QComboBox, QSpinBox, QLabel, QHBoxLayout, QFileDialog, QPushButton
 )
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation
+from PyQt5.QtCore import Qt, QPropertyAnimation
 import pyqtgraph as pg 
+#Saving plots to disks. 
 from pyqtgraph.exporters import ImageExporter,SVGExporter
 
 class TimeSeriesViewer(QMainWindow):
     def __init__(self):
+        #Calls the constructor of parent class (QMainWindow)
         super().__init__()
         self.setWindowTitle("Signals Visualizer")
+        #GUI position when it pop's up initially.
         self.setGeometry(100, 100, 1200, 700)
 
-        # File Selection
+        # Opens the file chooser dialog for user to select the CSV from merged biopac file. 
         csv_file, _ = QFileDialog.getOpenFileName(self, "Select merged CSV file", "", "CSV Files (*.csv)")
         if not csv_file:
             sys.exit("No file selected. Exiting.")
@@ -64,10 +80,11 @@ class TimeSeriesViewer(QMainWindow):
         ]
 
     def init_ui(self):
+        #Central controller of all window
         widget = QWidget()
+        #Arranges the child widgets vertically 
         layout = QVBoxLayout()
-
-        # Controls
+        #Arranges the child widgets vertically 
         control_layout = QHBoxLayout()
 
         #Adding save image button 
@@ -79,8 +96,10 @@ class TimeSeriesViewer(QMainWindow):
         #Adding menu tab
         self.signal_selector = QComboBox()
         self.signal_selector.addItems(["ECG", "PPG", "SKT", "EDA"])
+        #Sends information of signal change to on_signal_change() function to update plot. 
         self.signal_selector.currentTextChanged.connect(self.on_signal_change)
 
+        #box for changing the sampling frequency
         self.sampling_rate_box = QSpinBox()
         self.sampling_rate_box.setRange(10, 1000)
         self.sampling_rate_box.setValue(self.sampling_rate)
