@@ -54,6 +54,39 @@ class PlainAxis(pg.AxisItem):
 class SignalPane(QWidget):
     def __init__(self, name: str, csv_path: Path, slow_cols=None, parent=None):
         super().__init__(parent)
+        # Canonical display names for Y-axis (same across BIOPAC & mDAQ)
+        self.display_names = {
+            # ECG
+            "ECG": "ECG",
+            "ecg": "ECG",
+
+            # Skin temperature
+            "SKT": "Skin Temp",
+            "body_temp": "Body Temp",
+
+            # EDA
+            "EDA": "EDA",
+            "eda": "EDA",
+
+            # PPG / light channels
+            "PPG": "PPG",
+            "ir": "PPG (Infra Red)",
+            "red": "PPG (Red)",
+
+            # Motion
+            "acc_x": "Acceleration",
+            "acc_y": "Acceleration",
+            "acc_z": "Acceleration",
+            "gyr_x": "Angular rate",
+            "gyr_y": "Angular rate",
+            "gyr_z": "Angular rate",
+
+            # Environment / misc.
+            "relative_humidity": "Relative Humidity",
+            "ambient_temp": "Ambient Temp",
+            "batt%": "Battery",
+        }
+
         self.name = name
         self.csv_path = Path(csv_path)
         self.log = setup_logger(self.csv_path.with_suffix(f".{self.name.lower()}.viewer.log"))
@@ -330,9 +363,17 @@ class SignalPane(QWidget):
                 self.plot.addItem(t)
 
         unit = self.units.get(sig, "")
-        self.plot.setTitle(f"{self.name} — {sig} | view≈{int(self.target_rate)} Hz (src≈{int(self.source_hz)} Hz)",
-                           color="black", size="12pt")
-        self.plot.setLabel("left", f"{sig} ({unit})", color="black")
+        # self.plot.setTitle(f"{self.name} — {sig} | view≈{int(self.target_rate)} Hz (src≈{int(self.source_hz)} Hz)",
+        #                    color="black", size="12pt")
+        # self.plot.setLabel("left", f"{sig} ({unit})", color="black")
+        unit = self.units.get(sig, "")
+        display_name = self.display_names.get(sig, sig)  # fallback to raw name if not mapped
+        self.plot.setTitle(
+        f"{self.name} — {display_name} | view≈{int(self.target_rate)} Hz (src≈{int(self.source_hz)} Hz)",
+         color="black",
+            size="12pt"
+      )
+        self.plot.setLabel("left", f"{display_name} ({unit})", color="black")
         self.plot.setLabel("bottom", "Time (s)", color="black")
 
     # ----- callbacks & interactions -----
