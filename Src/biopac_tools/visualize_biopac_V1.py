@@ -118,29 +118,39 @@ class TimeSeriesViewer(QMainWindow):
         )
         self.toast.setVisible(False)
 
+        #Top horizontal controller.
         control_layout.addWidget(QLabel("Select Signal:"))
+        #Inject the list of signal to select and into horizontal contro_layout widget
         control_layout.addWidget(self.signal_selector)
         control_layout.addWidget(QLabel("Sampling Rate (Hz):"))
         control_layout.addWidget(self.sampling_rate_box)
         control_layout.addWidget(self.pan_button)
         layout.addLayout(control_layout)
 
-        # Plot widget
+        #Plot widget
+        #creates an instance of a PlotWidget, which is the main canvas where our data will be graphed.
         self.plot_widget = pg.PlotWidget()
         self.plot_widget.setBackground('#f4f4f4')
         self.plot_widget.showGrid(x=True, y=True, alpha=0.3)
+        #allows the user to pan and zoom the plot using the mouse.
         self.plot_widget.setMouseEnabled(x=True, y=True)
+        #enables a right-click context menu
         self.plot_widget.setMenuEnabled(True)
+        #Draw data points that are only visible for enhanced performance. 
         self.plot_widget.setClipToView(True)
+        #Auto downsamaple data if bulky and preserve the peaks and dips
         self.plot_widget.setDownsampling(auto=True, mode='peak')
+        #color and fonts for x and y axis. 
         self.plot_widget.getAxis("left").setTextPen("black")
         self.plot_widget.getAxis("bottom").setTextPen("black")
         self.plot_widget.getAxis("left").setStyle(tickFont=pg.QtGui.QFont("Arial", 10))
         self.plot_widget.getAxis("bottom").setStyle(tickFont=pg.QtGui.QFont("Arial", 10))
+        #reset screen on double click
         self.plot_widget.scene().sigMouseClicked.connect(self.reset_zoom_on_double_click)
+        #rect zoom when dragged on mouse
         self.plot_widget.getViewBox().setMouseMode(pg.ViewBox.RectMode)
 
-        #Crosshair (Vertical + Horizontal)
+        #Crosshair (Vertical + Horizontal needs debugging
         self.vLine = pg.InfiniteLine(angle=90, movable=False, pen=pg.mkPen('gray', style=pg.QtCore.Qt.DashLine))
         self.hLine = pg.InfiniteLine(angle=0, movable=False, pen=pg.mkPen('gray', style=pg.QtCore.Qt.DashLine))
         self.plot_widget.addItem(self.vLine, ignoreBounds=True)
@@ -153,6 +163,7 @@ class TimeSeriesViewer(QMainWindow):
         # Mouse move event for crosshair + tooltip
         self.proxy = pg.SignalProxy(self.plot_widget.scene().sigMouseMoved, rateLimit=60, slot=self.on_mouse_move)
 
+        #lines take the plot widget you've configured and place it inside the main application window.
         layout.addWidget(self.plot_widget)
         widget.setLayout(layout)
         self.setCentralWidget(widget)
@@ -170,6 +181,7 @@ class TimeSeriesViewer(QMainWindow):
         You can save as PNG, JPG, or SVG.
         """
         default_name = f"{self.current_signal}_plot"
+        #Opens a “Save As…” dialog.
         fname, ffilter = QFileDialog.getSaveFileName(
             self,
             "Save Plot Image",
@@ -286,6 +298,7 @@ class TimeSeriesViewer(QMainWindow):
 
         pen_color = self.signal_colors.get(self.current_signal, "blue")
         pen = pg.mkPen(color=pen_color, width=1.5)
+        #plot main chart and update when singal changes
         self.plot_widget.plot(df['relative_time_s'], df[self.current_signal], pen=pen)
 
         y_min, y_max = self.signal_y_ranges.get(
