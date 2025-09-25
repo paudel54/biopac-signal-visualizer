@@ -438,7 +438,7 @@ class SignalPane(QWidget):
 class CompareViewer(QMainWindow):
     def __init__(self):
         super().__init__()
-        CUSTOM_HEADER = "P6 | Session 2 | ML013 "
+        CUSTOM_HEADER = "P17 | Session 1 | ML023 "
         self.setWindowTitle("BIOPAC vs mDAQ — Time Series Comparison")
         self.setGeometry(60, 60, 1280, 860)
 
@@ -560,7 +560,7 @@ class CompareViewer(QMainWindow):
         self.biopac.set_pan_mode(enabled)
         self.mdaq.set_pan_mode(enabled)
         # tiny toast so you know what mode you're in
-        self.show_toast("Pan mode ON (X linked)" if enabled else "Pan mode OFF (box-zoom)")
+        self.show_toast("Pan mode ON" if enabled else "Pan mode OFF (box-zoom)")
 
 
 
